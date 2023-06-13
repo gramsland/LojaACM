@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -34,6 +35,8 @@ public class Main {
         Pagamento pagamento3 = new Pagamento(List.of(produto3, produto1), LocalDate.now().minusMonths(1), cliente3);
 
         //2 - Ordene e imprima os pagamentos pela data de compra.
+        System.out.println("==============================================");
+        System.out.println("2 - Ordene e imprima os pagamentos pela data de compra.");
         List<Pagamento> listaDePagamentos = List.of(pagamento1, pagamento2, pagamento3);
 
         List<Pagamento> listaDePagamentosOrdenada = listaDePagamentos
@@ -44,7 +47,18 @@ public class Main {
         listaDePagamentosOrdenada.forEach(p -> System.out.println(p.getDataCompra()));
 
         //3 - Calcule e Imprima a soma dos valores de um pagamento com optional e recebendo um Double diretamente.
+        System.out.println("==============================================");
+        System.out.println("3 - Calcule e Imprima a soma dos valores de um pagamento com optional e recebendo um Double diretamente.");
+        System.out.println(pagamento1.somarPagamentos());
 
+        //4 -  Calcule o Valor de todos os pagamentos da Lista de pagamentos.
+        System.out.println("==============================================");
+        System.out.println("4 -  Calcule o Valor de todos os pagamentos da Lista de pagamentos.");
+        listaDePagamentos
+                .stream()
+                .map(p -> p.somarPagamentos())
+                .collect(Collectors.toList())
+                .forEach(System.out::println);
 
     }
 }

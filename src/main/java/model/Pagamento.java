@@ -39,6 +39,16 @@ public class Pagamento {
         this.cliente = cliente;
     }
 
+    public Double somarPagamentos(){
+
+        double total = getProdutos()
+                .stream()
+                .mapToDouble(p ->p.getPreco().doubleValue())
+                .sum();
+
+        return total;
+    }
+
     @Override
     public String toString() {
         return "Pagamento{" +
