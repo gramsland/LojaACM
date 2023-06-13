@@ -49,7 +49,15 @@ public class Main {
         //3 - Calcule e Imprima a soma dos valores de um pagamento com optional e recebendo um Double diretamente.
         System.out.println("==============================================");
         System.out.println("3 - Calcule e Imprima a soma dos valores de um pagamento com optional e recebendo um Double diretamente.");
-        System.out.println(pagamento1.somarPagamentos());
+
+        Optional<Double> somaOptional = pagamento1.getProdutos().stream()
+                .map(Produto::getPreco)
+                .map(BigDecimal::doubleValue)
+                .reduce(Double::sum);
+
+        double soma = somaOptional.orElse(0.0);
+
+        System.out.println("Soma dos valores: " + soma);
 
         //4 -  Calcule o Valor de todos os pagamentos da Lista de pagamentos.
         System.out.println("==============================================");
