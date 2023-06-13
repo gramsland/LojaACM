@@ -43,6 +43,8 @@ public class Main {
 
         listaDePagamentos.forEach(p -> System.out.println(p.getDataCompra()));
 
+        //3 - Calcule e Imprima a soma dos valores de um pagamento com optional e recebendo um Double diretamente.
+
 
     }
 }
