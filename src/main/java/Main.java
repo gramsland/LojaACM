@@ -7,17 +7,13 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        //1 Crie uma Classe com um método main para criar alguns produtos, clientes e pagamentos.
         Produto produto1 = new Produto("Produto 1", Paths.get("/produtos/fear-of-the-dark.mp3") , new BigDecimal("10.00"));
         Produto produto2 = new Produto("Produto 2", Paths.get("/produtos/Avatar.mp4") , new BigDecimal("20.00"));
         Produto produto3 = new Produto("Produto 3", Paths.get("/produtos/monalisa.jpeg") , new BigDecimal("30.00"));
@@ -34,7 +30,6 @@ public class Main {
         Pagamento pagamento2 = new Pagamento(List.of(produto2, produto3), LocalDate.now().minusDays(1), cliente2);
         Pagamento pagamento3 = new Pagamento(List.of(produto3, produto1), LocalDate.now().minusMonths(1), cliente3);
 
-        //2 - Ordene e imprima os pagamentos pela data de compra.
         System.out.println("==============================================");
         System.out.println("2 - Ordene e imprima os pagamentos pela data de compra.");
         List<Pagamento> listaDePagamentos = List.of(pagamento1, pagamento2, pagamento3);
@@ -46,27 +41,31 @@ public class Main {
 
         listaDePagamentosOrdenada.forEach(p -> System.out.println(p.getDataCompra()));
 
-        //3 - Calcule e Imprima a soma dos valores de um pagamento com optional e recebendo um Double diretamente.
         System.out.println("==============================================");
         System.out.println("3 - Calcule e Imprima a soma dos valores de um pagamento com optional e recebendo um Double diretamente.");
 
-        Optional<Double> somaOptional = pagamento1.getProdutos().stream()
+        Optional<BigDecimal> somaOptional = pagamento1.getProdutos().stream()
                 .map(Produto::getPreco)
-                .map(BigDecimal::doubleValue)
-                .reduce(Double::sum);
+                .reduce(BigDecimal::add);
 
-        double soma = somaOptional.orElse(0.0);
+        BigDecimal soma = somaOptional.orElse(BigDecimal.ZERO);
 
         System.out.println("Soma dos valores: " + soma);
 
-        //4 -  Calcule o Valor de todos os pagamentos da Lista de pagamentos.
         System.out.println("==============================================");
         System.out.println("4 -  Calcule o Valor de todos os pagamentos da Lista de pagamentos.");
         listaDePagamentos
                 .stream()
-                .map(p -> p.somarPagamentos())
+                .map(Pagamento::somarPagamentos)
                 .collect(Collectors.toList())
                 .forEach(System.out::println);
 
+        System.out.println("==============================================");
+        System.out.println("5 - Imprima a quantidade de cada Produto vendido.");
+        listaDePagamentos.stream()
+                .flatMap(p -> p.getProdutos().stream())
+                .collect(Collectors.groupingBy(p -> p, Collectors.counting()))
+                .forEach((p, qtd) -> System.out.println(p.getNome() + " - " + qtd));
+        ;
     }
 }

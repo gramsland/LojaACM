@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,14 +40,12 @@ public class Pagamento {
         this.cliente = cliente;
     }
 
-    public Double somarPagamentos(){
+    public BigDecimal somarPagamentos(){
 
-        double total = getProdutos()
+        return getProdutos()
                 .stream()
-                .mapToDouble(p ->p.getPreco().doubleValue())
-                .sum();
-
-        return total;
+                .map(Produto::getPreco)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
