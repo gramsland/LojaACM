@@ -39,4 +39,13 @@ public class Produto {
         this.file = file;
         this.preco = preco;
     }
+
+    @Override
+    public String toString() {
+        return "Produto{" +
+                "nome='" + nome + '\'' +
+                ", file=" + file +
+                ", preco=" + preco +
+                '}';
+    }
 }

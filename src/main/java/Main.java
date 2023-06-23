@@ -67,5 +67,15 @@ public class Main {
                 .collect(Collectors.groupingBy(p -> p, Collectors.counting()))
                 .forEach((p, qtd) -> System.out.println(p.getNome() + " - " + qtd));
         ;
+        System.out.println("==============================================");
+        System.out.println("6 - Crie um Mapa de <Cliente, List<Produto>");
+        Map<Cliente, List<Produto>> mapaClientesProdutos = listaDePagamentos.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                Pagamento::getCliente,
+                                Collectors.flatMapping(pagamento -> pagamento.getProdutos().stream(), Collectors.toList())
+                        )
+                );
+        mapaClientesProdutos.forEach((cliente, produtos) -> System.out.println(cliente.getNome() + " - " + produtos.toString()));
     }
 }
