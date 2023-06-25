@@ -2,13 +2,15 @@ import model.Assinatura;
 import model.Cliente;
 import model.Pagamento;
 import model.Produto;
+import service.FaturamentoCalculator;
 
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 public class Main {
 
@@ -66,7 +68,7 @@ public class Main {
                 .flatMap(p -> p.getProdutos().stream())
                 .collect(Collectors.groupingBy(p -> p, Collectors.counting()))
                 .forEach((p, qtd) -> System.out.println(p.getNome() + " - " + qtd));
-        ;
+
         System.out.println("==============================================");
         System.out.println("6 - Crie um Mapa de <Cliente, List<Produto>");
         Map<Cliente, List<Produto>> mapaClientesProdutos = listaDePagamentos.stream()
@@ -77,5 +79,41 @@ public class Main {
                         )
                 );
         mapaClientesProdutos.forEach((cliente, produtos) -> System.out.println(cliente.getNome() + " - " + produtos.toString()));
+
+        System.out.println("==============================================");
+        System.out.println("8 - Quanto foi faturado em um determinado mês?");
+
+        FaturamentoCalculator faturamentoCalculator = new FaturamentoCalculator();
+        int mes = LocalDateTime.now().getMonthValue();
+        int ano = LocalDateTime.now().getYear();
+        BigDecimal faturamento = faturamentoCalculator.calcularFaturamentoPorMes(listaDePagamentos, mes, ano);
+        System.out.println("Faturamento do mês " + mes + "/" + ano + ": " + faturamento);
+
+        System.out.println("==============================================");
+        System.out.println("9 - Crie 3 assinaturas com assinaturas de 99.98 reais, sendo 2 deles com assinaturas encerradas.");
+
+        Assinatura assinaturaAtiva = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(1), cliente1);
+        Assinatura assinaturaEncerrada1 = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(2), LocalDate.now(), cliente2);
+        Assinatura assinaturaEncerrada2 = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(3), LocalDate.now().minusDays(15), cliente3);
+
+        System.out.println("==============================================");
+        System.out.println("10 - Imprima o tempo de meses ativa de todas assinaturas. Não utilize IFs para assinaturas sem end Time.");
+        System.out.println("Tempo em meses ativa: " + assinaturaAtiva.tempoEmMesesAtiva());
+
+        System.out.println("==============================================");
+        System.out.println("11 - Imprima o tempo de meses ativa de todas assinaturas. Não utilize IFs para assinaturas sem end Time.");
+        List<Assinatura> listaDeAssinaturas = List.of(assinaturaAtiva, assinaturaEncerrada1, assinaturaEncerrada2, assinatura1, assinatura2, assinatura3);
+        listaDeAssinaturas.stream()
+                .mapToLong(Assinatura::tempoEmMesesAtiva)
+                .forEach(
+                        tempoEmMeses -> System.out.println("Tempo em meses: " + tempoEmMeses)
+                );
+
+        System.out.println("==============================================");
+        System.out.println("12 - Calcule o valor pago em cada assinatura até o momento.");
+        DoubleStream valorPagoPorAssinatura= listaDeAssinaturas.stream()
+                .mapToDouble(Assinatura::valorPago);
+
+        valorPagoPorAssinatura.forEach(System.out::println);
     }
 }
