@@ -2,16 +2,13 @@ import model.Assinatura;
 import model.Cliente;
 import model.Pagamento;
 import model.Produto;
-import service.FaturamentoCalculator;
 
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 public class Main {
 
@@ -24,10 +21,6 @@ public class Main {
         Cliente cliente1 = new Cliente("João");
         Cliente cliente2 = new Cliente("Maria");
         Cliente cliente3 = new Cliente("José");
-
-        Assinatura assinatura1 = new Assinatura(new BigDecimal("10.00"), LocalDate.now(), cliente1);
-        Assinatura assinatura2 = new Assinatura(new BigDecimal("20.00"), LocalDate.now(), cliente2);
-        Assinatura assinatura3 = new Assinatura(new BigDecimal("30.00"), LocalDate.now(), cliente3);
 
         Pagamento pagamento1 = new Pagamento(List.of(produto1, produto2), LocalDate.now(), cliente1);
         Pagamento pagamento2 = new Pagamento(List.of(produto2, produto3), LocalDate.now().minusDays(1), cliente2);
@@ -114,8 +107,8 @@ public class Main {
         System.out.println("9 - Crie 3 assinaturas com assinaturas de 99.98 reais, sendo 2 deles com assinaturas encerradas.");
 
         Assinatura assinatura = new Assinatura(new BigDecimal("99.98"), LocalDate.now(), cliente1);
-        Assinatura assinaturaDois = new Assinatura(new BigDecimal("10.98"), LocalDate.now().minusMonths(2), LocalDate.now(), cliente2);
-        Assinatura assinaturaTres = new Assinatura(new BigDecimal("11.98"), LocalDate.now().minusMonths(1), LocalDate.now(), cliente3);
+        Assinatura assinaturaDois = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(2), LocalDate.now(), cliente2);
+        Assinatura assinaturaTres = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(1), LocalDate.now(), cliente3);
 
         System.out.println("Assinatura :" + assinatura.getMensalidade() + ": " + assinatura.getDataInicio() + ": " + assinatura.getCliente().getNome());
         System.out.println("Assinatura :" + assinaturaDois.getMensalidade() + ": " + assinaturaDois.getDataInicio() + ": " + assinaturaDois.getDataFim() + ": " + assinaturaDois.getCliente().getNome());
@@ -135,7 +128,7 @@ public class Main {
         assinaturas.forEach(assinaturaPresente -> {
             long mesesEntreInicioEFim = Optional.ofNullable(assinaturaPresente.getDataFim())
                     .map(dataFim -> assinaturaPresente.getDataInicio().until(dataFim, ChronoUnit.MONTHS))
-                    .orElse(-1L);
+                    .orElse(0L);
 
             System.out.println("Tempo em meses da assinatura: " + mesesEntreInicioEFim);
         });
