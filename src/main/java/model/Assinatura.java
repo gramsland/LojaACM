@@ -8,7 +8,6 @@ public class Assinatura {
     private BigDecimal mensalidade;
     private LocalDate dataInicio;
     private LocalDate dataFim;
-
     private Cliente cliente;
 
 

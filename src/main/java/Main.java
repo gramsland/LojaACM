@@ -7,6 +7,7 @@ import service.FaturamentoCalculator;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,39 +82,71 @@ public class Main {
         mapaClientesProdutos.forEach((cliente, produtos) -> System.out.println(cliente.getNome() + " - " + produtos.toString()));
 
         System.out.println("==============================================");
+        System.out.println("7 - Qual cliente gastou mais?");
+
+        Map<Cliente, BigDecimal> gastoPorCliente = listaDePagamentos
+                .stream()
+                .collect(Collectors.groupingBy(Pagamento::getCliente, Collectors.reducing(BigDecimal.ZERO, Pagamento::somarPagamentos, BigDecimal::add))
+        );
+
+        Cliente quemGastouMais = gastoPorCliente.entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        System.out.println("Cliente que gastou mais: " + quemGastouMais.getNome());
+
+        System.out.println("==============================================");
         System.out.println("8 - Quanto foi faturado em um determinado mês?");
 
-        FaturamentoCalculator faturamentoCalculator = new FaturamentoCalculator();
-        int mes = LocalDateTime.now().getMonthValue();
-        int ano = LocalDateTime.now().getYear();
-        BigDecimal faturamento = faturamentoCalculator.calcularFaturamentoPorMes(listaDePagamentos, mes, ano);
-        System.out.println("Faturamento do mês " + mes + "/" + ano + ": " + faturamento);
+        int mes = 6;
+
+        BigDecimal faturamentoMes = listaDePagamentos
+                .stream()
+                .filter(pagamento -> pagamento.getDataCompra().getMonthValue() == mes)
+                .map(Pagamento::somarPagamentos)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        System.out.println("Faturamento do mês " + mes + ": " + faturamentoMes);
 
         System.out.println("==============================================");
         System.out.println("9 - Crie 3 assinaturas com assinaturas de 99.98 reais, sendo 2 deles com assinaturas encerradas.");
 
-        Assinatura assinaturaAtiva = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(1), cliente1);
-        Assinatura assinaturaEncerrada1 = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(2), LocalDate.now(), cliente2);
-        Assinatura assinaturaEncerrada2 = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(3), LocalDate.now().minusDays(15), cliente3);
+        Assinatura assinatura = new Assinatura(new BigDecimal("99.98"), LocalDate.now(), cliente1);
+        Assinatura assinaturaDois = new Assinatura(new BigDecimal("10.98"), LocalDate.now().minusMonths(2), LocalDate.now(), cliente2);
+        Assinatura assinaturaTres = new Assinatura(new BigDecimal("11.98"), LocalDate.now().minusMonths(1), LocalDate.now(), cliente3);
+
+        System.out.println("Assinatura :" + assinatura.getMensalidade() + ": " + assinatura.getDataInicio() + ": " + assinatura.getCliente().getNome());
+        System.out.println("Assinatura :" + assinaturaDois.getMensalidade() + ": " + assinaturaDois.getDataInicio() + ": " + assinaturaDois.getDataFim() + ": " + assinaturaDois.getCliente().getNome());
+        System.out.println("Assinatura :" + assinaturaTres.getMensalidade() + ": " + assinaturaTres.getDataInicio() + ": " + assinaturaTres.getDataFim() + ": " + assinaturaTres.getCliente().getNome());
 
         System.out.println("==============================================");
-        System.out.println("10 - Imprima o tempo de meses ativa de todas assinaturas. Não utilize IFs para assinaturas sem end Time.");
-        System.out.println("Tempo em meses ativa: " + assinaturaAtiva.tempoEmMesesAtiva());
+        System.out.println("10 - Imprima o tempo em meses de alguma assinatura ainda ativa.");
+
+        System.out.println("Tempo de assinaturaDois ativa: " + assinaturaDois.getDataInicio().until(assinaturaDois.getDataFim(), ChronoUnit.MONTHS) + " meses");
 
         System.out.println("==============================================");
-        System.out.println("11 - Imprima o tempo de meses ativa de todas assinaturas. Não utilize IFs para assinaturas sem end Time.");
-        List<Assinatura> listaDeAssinaturas = List.of(assinaturaAtiva, assinaturaEncerrada1, assinaturaEncerrada2, assinatura1, assinatura2, assinatura3);
-        listaDeAssinaturas.stream()
-                .mapToLong(Assinatura::tempoEmMesesAtiva)
-                .forEach(
-                        tempoEmMeses -> System.out.println("Tempo em meses: " + tempoEmMeses)
-                );
+        System.out.println("11 - Imprima o tempo de meses entre o start e end de todas assinaturas. Não utilize IFs para assinaturas sem end Time.");
+
+        List<Assinatura> assinaturas = List.of(assinatura, assinaturaDois, assinaturaTres);
+
+
+        assinaturas.forEach(assinaturaPresente -> {
+            long mesesEntreInicioEFim = Optional.ofNullable(assinaturaPresente.getDataFim())
+                    .map(dataFim -> assinaturaPresente.getDataInicio().until(dataFim, ChronoUnit.MONTHS))
+                    .orElse(-1L);
+
+            System.out.println("Tempo em meses da assinatura: " + mesesEntreInicioEFim);
+        });
 
         System.out.println("==============================================");
         System.out.println("12 - Calcule o valor pago em cada assinatura até o momento.");
-        DoubleStream valorPagoPorAssinatura= listaDeAssinaturas.stream()
-                .mapToDouble(Assinatura::valorPago);
 
-        valorPagoPorAssinatura.forEach(System.out::println);
+        assinaturas.forEach(assinaturaExistente -> {
+            long mesesDecorridos = assinaturaExistente.getDataInicio().until(LocalDate.now(), ChronoUnit.MONTHS);
+            BigDecimal valorPago = assinaturaExistente.getMensalidade().multiply(BigDecimal.valueOf(mesesDecorridos));
+            System.out.println("Valor pago na assinatura até o momento: " + valorPago);
+        });
     }
 }
