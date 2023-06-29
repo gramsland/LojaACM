@@ -2,13 +2,16 @@ import model.Assinatura;
 import model.Cliente;
 import model.Pagamento;
 import model.Produto;
+import service.FaturamentoCalculator;
 
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 public class Main {
 
@@ -66,7 +69,7 @@ public class Main {
                 .flatMap(p -> p.getProdutos().stream())
                 .collect(Collectors.groupingBy(p -> p, Collectors.counting()))
                 .forEach((p, qtd) -> System.out.println(p.getNome() + " - " + qtd));
-        ;
+
         System.out.println("==============================================");
         System.out.println("6 - Crie um Mapa de <Cliente, List<Produto>");
         Map<Cliente, List<Produto>> mapaClientesProdutos = listaDePagamentos.stream()

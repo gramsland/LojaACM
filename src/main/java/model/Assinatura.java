@@ -10,6 +10,20 @@ public class Assinatura {
     private LocalDate dataFim;
     private Cliente cliente;
 
+
+    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, LocalDate dataFim, Cliente cliente) {
+        this.mensalidade = mensalidade;
+        this.dataInicio = dataInicio;
+        this.dataFim = dataFim;
+        this.cliente = cliente;
+    }
+
+    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, Cliente cliente) {
+        this.mensalidade = mensalidade;
+        this.dataInicio = dataInicio;
+        this.cliente = cliente;
+    }
+
     public BigDecimal getMensalidade() {
         return mensalidade;
     }
@@ -42,16 +56,19 @@ public class Assinatura {
         this.cliente = cliente;
     }
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, LocalDate dataFim, Cliente cliente) {
-        this.mensalidade = mensalidade;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
-        this.cliente = cliente;
+    public boolean ativa() {
+        return dataFim == null;
     }
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, Cliente cliente) {
-        this.mensalidade = mensalidade;
-        this.dataInicio = dataInicio;
-        this.cliente = cliente;
+    public long tempoEmMesesAtiva() {
+        if (ativa()) {
+            return dataInicio.until(LocalDate.now()).toTotalMonths();
+        }
+        return dataInicio.until(dataFim).toTotalMonths();
     }
+
+    public double valorPago() {
+        return mensalidade.doubleValue() * tempoEmMesesAtiva();
+    }
+
 }
