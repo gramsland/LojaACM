@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import exception.ClienteNaoEncontradoException;
 
 public class Main {
 
@@ -82,13 +83,12 @@ public class Main {
                 .collect(Collectors.groupingBy(Pagamento::getCliente, Collectors.reducing(BigDecimal.ZERO, Pagamento::somarPagamentos, BigDecimal::add))
         );
 
-        Cliente quemGastouMais = gastoPorCliente.entrySet()
+        Optional<Cliente> quemGastouMais = gastoPorCliente.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse(null);
+                .map(Map.Entry::getKey);
 
-        System.out.println("Cliente que gastou mais: " + quemGastouMais.getNome());
+        System.out.println("Cliente que gastou mais: " + quemGastouMais.map(Cliente::getNome).orElseThrow(ClienteNaoEncontradoException::new));
 
         System.out.println("==============================================");
         System.out.println("8 - Quanto foi faturado em um determinado mês?");
