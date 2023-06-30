@@ -6,6 +6,7 @@ import model.Produto;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,9 +107,9 @@ public class Main {
         System.out.println("==============================================");
         System.out.println("9 - Crie 3 assinaturas com assinaturas de 99.98 reais, sendo 2 deles com assinaturas encerradas.");
 
-        Assinatura assinatura = new Assinatura(new BigDecimal("99.98"), LocalDate.now(), cliente1);
-        Assinatura assinaturaDois = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(2), LocalDate.now(), cliente2);
-        Assinatura assinaturaTres = new Assinatura(new BigDecimal("99.98"), LocalDate.now().minusMonths(1), LocalDate.now(), cliente3);
+        Assinatura assinatura = new Assinatura(new BigDecimal("99.98"), LocalDateTime.now(), cliente1);
+        Assinatura assinaturaDois = new Assinatura(new BigDecimal("99.98"), LocalDateTime.now().minusMonths(2), LocalDateTime.now(), cliente2);
+        Assinatura assinaturaTres = new Assinatura(new BigDecimal("99.98"), LocalDateTime.now().minusMonths(1), LocalDateTime.now(), cliente3);
 
         System.out.println("Assinatura :" + assinatura.getMensalidade() + ": " + assinatura.getDataInicio() + ": " + assinatura.getCliente().getNome());
         System.out.println("Assinatura :" + assinaturaDois.getMensalidade() + ": " + assinaturaDois.getDataInicio() + ": " + assinaturaDois.getDataFim() + ": " + assinaturaDois.getCliente().getNome());
@@ -117,18 +118,14 @@ public class Main {
         System.out.println("==============================================");
         System.out.println("10 - Imprima o tempo em meses de alguma assinatura ainda ativa.");
 
-        System.out.println("Tempo de assinaturaDois ativa: " + assinaturaDois.getDataInicio().until(assinaturaDois.getDataFim(), ChronoUnit.MONTHS) + " meses");
-
+        System.out.println("Tempo de assinaturaDois ativa: " + ChronoUnit.MONTHS.between(assinaturaDois.getDataInicio(), assinaturaDois.getDataFim().orElse(LocalDateTime.now()))+ " meses");
         System.out.println("==============================================");
         System.out.println("11 - Imprima o tempo de meses entre o start e end de todas assinaturas. Não utilize IFs para assinaturas sem end Time.");
 
         List<Assinatura> assinaturas = List.of(assinatura, assinaturaDois, assinaturaTres);
 
-
         assinaturas.forEach(assinaturaPresente -> {
-            long mesesEntreInicioEFim = Optional.ofNullable(assinaturaPresente.getDataFim())
-                    .map(dataFim -> assinaturaPresente.getDataInicio().until(dataFim, ChronoUnit.MONTHS))
-                    .orElse(0L);
+            long mesesEntreInicioEFim  = ChronoUnit.MONTHS.between(assinaturaPresente.getDataInicio(), assinaturaPresente.getDataFim().orElse(LocalDateTime.now()));
 
             System.out.println("Tempo em meses da assinatura: " + mesesEntreInicioEFim);
         });
@@ -137,7 +134,7 @@ public class Main {
         System.out.println("12 - Calcule o valor pago em cada assinatura até o momento.");
 
         assinaturas.forEach(assinaturaExistente -> {
-            long mesesDecorridos = assinaturaExistente.getDataInicio().until(LocalDate.now(), ChronoUnit.MONTHS);
+            long mesesDecorridos = assinaturaExistente.getDataInicio().until(LocalDateTime.now(), ChronoUnit.MONTHS);
             BigDecimal valorPago = assinaturaExistente.getMensalidade().multiply(BigDecimal.valueOf(mesesDecorridos));
             System.out.println("Valor pago na assinatura até o momento: " + valorPago);
         });

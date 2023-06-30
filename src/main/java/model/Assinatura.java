@@ -1,26 +1,28 @@
 package model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class Assinatura {
 
     private BigDecimal mensalidade;
-    private LocalDate dataInicio;
-    private LocalDate dataFim;
+    private LocalDateTime dataInicio;
+    private Optional<LocalDateTime> dataFim;
     private Cliente cliente;
 
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, LocalDate dataFim, Cliente cliente) {
+    public Assinatura(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataFim, Cliente cliente) {
         this.mensalidade = mensalidade;
         this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
+        this.dataFim = Optional.of(dataFim);
         this.cliente = cliente;
     }
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, Cliente cliente) {
+    public Assinatura(BigDecimal mensalidade, LocalDateTime dataInicio, Cliente cliente) {
         this.mensalidade = mensalidade;
         this.dataInicio = dataInicio;
+        this.dataFim = Optional.empty();
         this.cliente = cliente;
     }
 
@@ -32,20 +34,20 @@ public class Assinatura {
         this.mensalidade = mensalidade;
     }
 
-    public LocalDate getDataInicio() {
+    public LocalDateTime getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(LocalDate dataInicio) {
+    public void setDataInicio(LocalDateTime dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public LocalDate getDataFim() {
+    public Optional<LocalDateTime> getDataFim() {
         return dataFim;
     }
 
-    public void setDataFim(LocalDate dataFim) {
-        this.dataFim = dataFim;
+    public void setDataFim(LocalDateTime dataFim) {
+        this.dataFim = Optional.of(dataFim);
     }
 
     public Cliente getCliente() {
@@ -56,19 +58,6 @@ public class Assinatura {
         this.cliente = cliente;
     }
 
-    public boolean ativa() {
-        return dataFim == null;
-    }
 
-    public long tempoEmMesesAtiva() {
-        if (ativa()) {
-            return dataInicio.until(LocalDate.now()).toTotalMonths();
-        }
-        return dataInicio.until(dataFim).toTotalMonths();
-    }
-
-    public double valorPago() {
-        return mensalidade.doubleValue() * tempoEmMesesAtiva();
-    }
 
 }
