@@ -1,7 +1,4 @@
-import model.Assinatura;
-import model.Cliente;
-import model.Pagamento;
-import model.Produto;
+import model.*;
 
 import java.math.BigDecimal;
 import java.nio.file.Paths;
@@ -107,9 +104,9 @@ public class Main {
         System.out.println("==============================================");
         System.out.println("9 - Crie 3 assinaturas com assinaturas de 99.98 reais, sendo 2 deles com assinaturas encerradas.");
 
-        Assinatura assinatura = new Assinatura(new BigDecimal("99.98"), LocalDateTime.now(), cliente1);
-        Assinatura assinaturaDois = new Assinatura(new BigDecimal("99.98"), LocalDateTime.now().minusMonths(2), LocalDateTime.now(), cliente2);
-        Assinatura assinaturaTres = new Assinatura(new BigDecimal("99.98"), LocalDateTime.now().minusMonths(1), LocalDateTime.now(), cliente3);
+        Assinatura assinatura = new AssinaturaTrimestral(new BigDecimal("99.98"), LocalDateTime.now(), cliente1);
+        Assinatura assinaturaDois = new AssinaturaSemestral(new BigDecimal("99.98"), LocalDateTime.now().minusMonths(2), LocalDateTime.now(), cliente2);
+        Assinatura assinaturaTres = new AssinaturaAnual(new BigDecimal("99.98"), LocalDateTime.now().minusMonths(1), LocalDateTime.now(), cliente3);
 
         System.out.println("Assinatura :" + assinatura.getMensalidade() + ": " + assinatura.getDataInicio() + ": " + assinatura.getCliente().getNome());
         System.out.println("Assinatura :" + assinaturaDois.getMensalidade() + ": " + assinaturaDois.getDataInicio() + ": " + assinaturaDois.getDataFim() + ": " + assinaturaDois.getCliente().getNome());

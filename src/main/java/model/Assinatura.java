@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class Assinatura {
+public abstract class Assinatura {
 
     private BigDecimal mensalidade;
     private LocalDateTime dataInicio;
@@ -58,6 +58,8 @@ public class Assinatura {
         this.cliente = cliente;
     }
 
+    public abstract BigDecimal CalcularValorAssinatura();
+    public abstract BigDecimal CalcularTaxa();
 
 
 }
