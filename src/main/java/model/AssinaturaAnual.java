@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 
 public class AssinaturaAnual extends Assinatura {
 
-    public AssinaturaAnual(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataFim, Cliente cliente) {
-        super(mensalidade, dataInicio, dataFim, cliente);
+    public AssinaturaAnual(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataFim, LocalDateTime dataVencimento, LocalDateTime dataPagamento, Cliente cliente) {
+        super(mensalidade, dataInicio, dataFim, dataVencimento, dataPagamento, cliente);
     }
 
-    public AssinaturaAnual(BigDecimal mensalidade, LocalDateTime dataInicio, Cliente cliente) {
-        super(mensalidade, dataInicio, cliente);
+    public AssinaturaAnual(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataVencimento, LocalDateTime dataPagamento, Cliente cliente) {
+        super(mensalidade, dataInicio, dataVencimento, dataPagamento, cliente);
     }
 
     @Override
