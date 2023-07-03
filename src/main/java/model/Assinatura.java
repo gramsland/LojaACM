@@ -2,6 +2,7 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 public abstract class Assinatura {
@@ -101,5 +102,13 @@ public abstract class Assinatura {
 
     public boolean isAtrasoPagamento() {
         return dataPagamento.map(pagamento -> pagamento.isAfter(dataVencimento)).orElse(false);
+    }
+
+    public long tempoEmMeses(){
+        return ChronoUnit.MONTHS.between(this.getDataInicio(), this.getDataFim().orElse(LocalDateTime.now()));
+    }
+
+    public BigDecimal valorPago(){
+        return this.getMensalidade().multiply(BigDecimal.valueOf(this.tempoEmMeses()));
     }
 }
