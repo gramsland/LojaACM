@@ -9,29 +9,11 @@ public class Produto {
     private Path file;
     private BigDecimal preco;
 
-
     public String getNome() {
         return nome;
     }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Path getFile() {
-        return file;
-    }
-
-    public void setFile(Path file) {
-        this.file = file;
-    }
-
     public BigDecimal getPreco() {
         return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
     }
 
     public Produto(String nome, Path file, BigDecimal preco) {

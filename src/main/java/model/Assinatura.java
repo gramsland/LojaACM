@@ -1,26 +1,39 @@
 package model;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import service.CalculoValorAssinatura;
+import service.CalculoValorAssinaturaPadrao;
 
-public class Assinatura {
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+
+public abstract class Assinatura {
 
     private BigDecimal mensalidade;
-    private LocalDate dataInicio;
-    private LocalDate dataFim;
+    private LocalDateTime dataInicio;
+    private Optional<LocalDateTime>  dataPagamento;
+    private LocalDateTime dataVencimento;
+    private Optional<LocalDateTime> dataFim;
     private Cliente cliente;
 
+    private CalculoValorAssinatura calculoValorAssinatura = new CalculoValorAssinaturaPadrao();
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, LocalDate dataFim, Cliente cliente) {
+    public Assinatura(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataFim, LocalDateTime dataVencimento, LocalDateTime dataPagamento, Cliente cliente) {
         this.mensalidade = mensalidade;
         this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
+        this.dataFim = Optional.of(dataFim);
+        this.dataVencimento = dataVencimento;
+        this.dataPagamento = Optional.of(dataPagamento);
         this.cliente = cliente;
     }
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, Cliente cliente) {
+    public Assinatura(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataVencimento, LocalDateTime dataPagamento, Cliente cliente) {
         this.mensalidade = mensalidade;
         this.dataInicio = dataInicio;
+        this.dataFim = Optional.empty();
+        this.dataVencimento = dataVencimento;
+        this.dataPagamento = Optional.of(dataPagamento);
         this.cliente = cliente;
     }
 
@@ -28,47 +41,41 @@ public class Assinatura {
         return mensalidade;
     }
 
-    public void setMensalidade(BigDecimal mensalidade) {
-        this.mensalidade = mensalidade;
-    }
-
-    public LocalDate getDataInicio() {
+    public LocalDateTime getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(LocalDate dataInicio) {
-        this.dataInicio = dataInicio;
-    }
-
-    public LocalDate getDataFim() {
+    public Optional<LocalDateTime> getDataFim() {
         return dataFim;
-    }
-
-    public void setDataFim(LocalDate dataFim) {
-        this.dataFim = dataFim;
     }
 
     public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public BigDecimal calcularValorAssinatura() {
+        return calculoValorAssinatura.calcularValorAssinatura(this);
     }
 
-    public boolean ativa() {
-        return dataFim == null;
-    }
-
-    public long tempoEmMesesAtiva() {
-        if (ativa()) {
-            return dataInicio.until(LocalDate.now()).toTotalMonths();
+    public void realizarCompra() {
+        boolean atraso = isAtrasoPagamento();
+        if (atraso) {
+            System.out.println("Não é possível realizar a compra. A assinatura está em atraso de pagamento.");
+        } else {
+            // Lógica para realizar a compra
+            System.out.println("Compra realizada com sucesso.");
         }
-        return dataInicio.until(dataFim).toTotalMonths();
     }
 
-    public double valorPago() {
-        return mensalidade.doubleValue() * tempoEmMesesAtiva();
+    public boolean isAtrasoPagamento() {
+        return dataPagamento.map(pagamento -> pagamento.isAfter(dataVencimento)).orElse(false);
     }
 
+    public long tempoEmMeses(){
+        return ChronoUnit.MONTHS.between(this.getDataInicio(), this.getDataFim().orElse(LocalDateTime.now()));
+    }
+
+    public BigDecimal valorPago(){
+        return this.calcularValorAssinatura().multiply(BigDecimal.valueOf(this.tempoEmMeses()));
+    }
 }
