@@ -28,9 +28,7 @@ public class PagamentosService {
                 .map(Produto::getPreco)
                 .reduce(BigDecimal::add);
 
-        BigDecimal soma = somaOptional.orElse(BigDecimal.ZERO);
-
-        return soma;
+        return somaOptional.orElse(BigDecimal.ZERO);
     }
 
     public static List<BigDecimal> calcularSomasPagamentos(List<Pagamento> listaDePagamentos) {
@@ -48,14 +46,13 @@ public class PagamentosService {
     }
 
     public static Map<Cliente, List<Produto>> listarProdutosPorCliente(List<Pagamento> listaDePagamentos) {
-        Map<Cliente, List<Produto>> mapaClientesProdutos = listaDePagamentos.stream()
+        return listaDePagamentos.stream()
                 .collect(
                         Collectors.groupingBy(
                                 Pagamento::getCliente,
                                 Collectors.flatMapping(pagamento -> pagamento.getProdutos().stream(), Collectors.toList())
                         )
                 );
-        return mapaClientesProdutos;
     }
 
 
@@ -71,20 +68,18 @@ public class PagamentosService {
 
         Map<Cliente, BigDecimal> gastoPorCliente = listarGastoPorCliente(listaDePagamentos);
 
-        Optional<Cliente> quemGastouMais = gastoPorCliente.entrySet()
+        return gastoPorCliente.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey);
-        return quemGastouMais;
     }
 
     public static BigDecimal listarFaturamentoMes(List<Pagamento> listaDePagamentos, int mes) {
-        BigDecimal faturamentoMes = listaDePagamentos
+        return listaDePagamentos
                 .stream()
                 .filter(pagamento -> pagamento.getDataCompra().getMonthValue() == mes)
                 .map(Pagamento::somarPagamentos)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return faturamentoMes;
     }
 
 }

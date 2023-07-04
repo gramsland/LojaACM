@@ -82,9 +82,7 @@ public class Main {
         List<Assinatura> assinaturas = List.of(assintaturaUm, assinaturaDois, assinaturaTres);
 
         assinaturas.forEach(assinaturaPresente -> {
-            long mesesEntreInicioEFim = assinaturaPresente.tempoEmMeses();
-
-            System.out.println("Tempo em meses da assinatura: " + mesesEntreInicioEFim);
+            System.out.println("Tempo em meses da assinatura: " + assinaturaPresente.tempoEmMeses());
         });
 
         System.out.println("==============================================");
