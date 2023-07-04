@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 public class AssinaturaSemestral extends Assinatura {
 
+    public static final BigDecimal MESES = BigDecimal.valueOf(6);
+
     public AssinaturaSemestral(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataFim, LocalDateTime dataVencimento, LocalDateTime dataPagamento,Cliente cliente) {
         super(mensalidade, dataInicio, dataFim, dataVencimento, dataPagamento,cliente);
     }
@@ -14,13 +16,13 @@ public class AssinaturaSemestral extends Assinatura {
     }
 
     @Override
-    public BigDecimal CalcularValorAssinatura() {
-        return this.getMensalidade().multiply(BigDecimal.valueOf(6));
+    public BigDecimal calcularValorAssinatura() {
+        return this.getMensalidade().multiply(BigDecimal.ONE.add(getTaxa()));
     }
 
     @Override
-    public BigDecimal CalcularTaxa() {
-       return CalcularValorAssinatura().multiply(BigDecimal.valueOf(0.03));
+    public BigDecimal getTaxa() {
+        return BigDecimal.valueOf(0.03);
     }
 
 }

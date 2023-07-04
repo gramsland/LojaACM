@@ -87,8 +87,8 @@ public abstract class Assinatura {
         this.cliente = cliente;
     }
 
-    public abstract BigDecimal CalcularValorAssinatura();
-    public abstract BigDecimal CalcularTaxa();
+    public abstract BigDecimal calcularValorAssinatura();
+    public abstract BigDecimal getTaxa();
 
     public void realizarCompra() {
         boolean atraso = isAtrasoPagamento();
@@ -109,6 +109,6 @@ public abstract class Assinatura {
     }
 
     public BigDecimal valorPago(){
-        return this.getMensalidade().multiply(BigDecimal.valueOf(this.tempoEmMeses()));
+        return this.calcularValorAssinatura().multiply(BigDecimal.valueOf(this.tempoEmMeses()));
     }
 }
