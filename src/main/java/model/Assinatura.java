@@ -1,26 +1,37 @@
 package model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
-public class Assinatura {
+public abstract class Assinatura {
 
     private BigDecimal mensalidade;
-    private LocalDate dataInicio;
-    private LocalDate dataFim;
+    private LocalDateTime dataInicio;
+
+    private Optional<LocalDateTime>  dataPagamento;
+    private LocalDateTime dataVencimento;
+    private Optional<LocalDateTime> dataFim;
     private Cliente cliente;
+    private boolean atrasoPagamento;
 
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, LocalDate dataFim, Cliente cliente) {
+    public Assinatura(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataFim, LocalDateTime dataVencimento, LocalDateTime dataPagamento, Cliente cliente) {
         this.mensalidade = mensalidade;
         this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
+        this.dataFim = Optional.of(dataFim);
+        this.dataVencimento = dataVencimento;
+        this.dataPagamento = Optional.of(dataPagamento);
         this.cliente = cliente;
     }
 
-    public Assinatura(BigDecimal mensalidade, LocalDate dataInicio, Cliente cliente) {
+    public Assinatura(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataVencimento, LocalDateTime dataPagamento, Cliente cliente) {
         this.mensalidade = mensalidade;
         this.dataInicio = dataInicio;
+        this.dataFim = Optional.empty();
+        this.dataVencimento = dataVencimento;
+        this.dataPagamento = Optional.of(dataPagamento);
         this.cliente = cliente;
     }
 
@@ -32,20 +43,40 @@ public class Assinatura {
         this.mensalidade = mensalidade;
     }
 
-    public LocalDate getDataInicio() {
+    public LocalDateTime getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(LocalDate dataInicio) {
+    public void setDataInicio(LocalDateTime dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public LocalDate getDataFim() {
+    public Optional<LocalDateTime> getDataFim() {
         return dataFim;
     }
 
-    public void setDataFim(LocalDate dataFim) {
-        this.dataFim = dataFim;
+    public void setDataFim(LocalDateTime dataFim) {
+        this.dataFim = Optional.of(dataFim);
+    }
+
+    public Optional<LocalDateTime> getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(Optional<LocalDateTime> dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
+    public LocalDateTime getDataVencimento() {
+        return dataVencimento;
+    }
+
+    public void setDataVencimento(LocalDateTime dataVencimento) {
+        this.dataVencimento = dataVencimento;
+    }
+
+    public void setAtrasoPagamento(boolean atrasoPagamento) {
+        this.atrasoPagamento = atrasoPagamento;
     }
 
     public Cliente getCliente() {
@@ -56,19 +87,28 @@ public class Assinatura {
         this.cliente = cliente;
     }
 
-    public boolean ativa() {
-        return dataFim == null;
-    }
+    public abstract BigDecimal calcularValorAssinatura();
+    public abstract BigDecimal getTaxa();
 
-    public long tempoEmMesesAtiva() {
-        if (ativa()) {
-            return dataInicio.until(LocalDate.now()).toTotalMonths();
+    public void realizarCompra() {
+        boolean atraso = isAtrasoPagamento();
+        if (atraso) {
+            System.out.println("Não é possível realizar a compra. A assinatura está em atraso de pagamento.");
+        } else {
+            // Lógica para realizar a compra
+            System.out.println("Compra realizada com sucesso.");
         }
-        return dataInicio.until(dataFim).toTotalMonths();
     }
 
-    public double valorPago() {
-        return mensalidade.doubleValue() * tempoEmMesesAtiva();
+    public boolean isAtrasoPagamento() {
+        return dataPagamento.map(pagamento -> pagamento.isAfter(dataVencimento)).orElse(false);
     }
 
+    public long tempoEmMeses(){
+        return ChronoUnit.MONTHS.between(this.getDataInicio(), this.getDataFim().orElse(LocalDateTime.now()));
+    }
+
+    public BigDecimal valorPago(){
+        return this.calcularValorAssinatura().multiply(BigDecimal.valueOf(this.tempoEmMeses()));
+    }
 }
