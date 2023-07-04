@@ -1,5 +1,8 @@
 package model;
 
+import service.CalculoValorAssinatura;
+import service.CalculoValorAssinaturaPadrao;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -16,6 +19,7 @@ public abstract class Assinatura {
     private Cliente cliente;
     private boolean atrasoPagamento;
 
+    private CalculoValorAssinatura calculoValorAssinatura = new CalculoValorAssinaturaPadrao();
 
     public Assinatura(BigDecimal mensalidade, LocalDateTime dataInicio, LocalDateTime dataFim, LocalDateTime dataVencimento, LocalDateTime dataPagamento, Cliente cliente) {
         this.mensalidade = mensalidade;
@@ -87,8 +91,9 @@ public abstract class Assinatura {
         this.cliente = cliente;
     }
 
-    public abstract BigDecimal calcularValorAssinatura();
-    public abstract BigDecimal getTaxa();
+    public BigDecimal calcularValorAssinatura() {
+        return calculoValorAssinatura.calcularValorAssinatura(this);
+    }
 
     public void realizarCompra() {
         boolean atraso = isAtrasoPagamento();
